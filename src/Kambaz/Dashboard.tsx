@@ -1,3 +1,4 @@
+import { Button, Card, Col, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
 export default function Dashboard() {
@@ -7,94 +8,127 @@ export default function Dashboard() {
       <h2 id="wd-dashboard-published">Published Courses (7)</h2> <hr />
       <div id="wd-dashboard-courses">
         <div className="wd-dashboard-course">
-          <Link to="/Kambaz/Courses/1234/Home"
-                className="wd-dashboard-course-link" >
-            <img src="/images/reactjs.jpg" width={200} />
-            <div>
-              <h5> CS1234 React JS </h5>
-              <p className="wd-dashboard-course-title">
-                Full Stack software developer  </p>
-              <button> Go </button>
-            </div>
-          </Link>
-        </div>
+            <Row xs={1} md={5} className="g-4">
+                <Col className="wd-dashboard-course" style={{ width: "300px" }}>
+                    <Card>
+                        <Link to="/Kambaz/Courses/1234/Home"
+                            className="wd-dashboard-course-link text-decoration-none text-dark">
+                            <Card.Img variant="top" src="/images/reactjs.jpg" width="100%" height={160}/>
+                            <Card.Body>
+                                <Card.Title className="wd-dashboard-course-title text-nowrap overflow-hidden">CS1234 React JS</Card.Title>
+                                <Card.Text  className="wd-dashboard-course-description overflow-hidden" style={{ height: "100px" }}>
+                                Full Stack software developer</Card.Text>
+                                <Button variant="primary">Go</Button>
+                            </Card.Body>
+                        </Link>
+                    </Card>
+                </Col>
+                
+                <Col className="wd-dashboard-course" style={{ width: "300px" }}>
+                    <Card>
+                        <Link to="/Kambaz/Courses/1234/Home"
+                            className="wd-dashboard-course-link text-decoration-none text-dark">
+                            <Card.Img variant="top" src="/images/5001.jpg" width="100%" height={160}/>
+                            <Card.Body>
+                                <Card.Title className="wd-dashboard-course-title text-nowrap overflow-hidden">
+                                    CS5001 Foundation of Computer Sciences
+                                </Card.Title>
+                                <Card.Text  className="wd-dashboard-course-description overflow-hidden" style={{ height: "100px" }}>
+                                Fall 2024</Card.Text>
+                                <Button variant="primary">Go</Button>
+                            </Card.Body>
+                        </Link>
+                    </Card>
+                </Col>
 
-        <div className="wd-dashboard-course">
-            <Link to="/Kambaz/Courses/1234/Home"
-                    className="wd-dashboard-course-link" >
-                <img src="/images/5001.jpg" width={200} />
-                <div>
-                <h5> CS5001 Foundation of Computer Sciences </h5>
-                <p className="wd-dashboard-course-title">
-                    Fall 2024  </p>
-                <button> Go </button>
-                </div>
-            </Link>
-        </div>
+                <Col className="wd-dashboard-course" style={{ width: "300px" }}>
+                    <Card>
+                        <Link to="/Kambaz/Courses/1234/Home"
+                            className="wd-dashboard-course-link text-decoration-none text-dark">
+                            <Card.Img variant="top" src="/images/Action.jpg" width="100%" height={160}/>
+                            <Card.Body>
+                                <Card.Title className="wd-dashboard-course-title text-nowrap overflow-hidden">
+                                AI in Action
+                                </Card.Title>
+                                <Card.Text  className="wd-dashboard-course-description overflow-hidden" style={{ height: "100px" }}>
+                                AI in the Workplace</Card.Text>
+                                <Button variant="primary">Go</Button>
+                            </Card.Body>
+                        </Link>
+                    </Card>
+                </Col>
 
-        <div className="wd-dashboard-course">
-            <Link to="/Kambaz/Courses/1234/Home"
-                    className="wd-dashboard-course-link" >
-                <img src="/images/Action.jpg" width={200} />
-                <div>
-                <h5> AI in Action </h5>
-                <p className="wd-dashboard-course-title">
-                    AI in the Workplace  </p>
-                <button> Go </button>
-                </div>
-            </Link>
-        </div>
+                <Col className="wd-dashboard-course" style={{ width: "300px" }}>
+                    <Card>
+                        <Link to="/Kambaz/Courses/1234/Home"
+                            className="wd-dashboard-course-link text-decoration-none text-dark">
+                            <Card.Img variant="top" src="/images/Math.jpg" width="100%" height={160}/>
+                            <Card.Body>
+                                <Card.Title className="wd-dashboard-course-title text-nowrap overflow-hidden">
+                                Align Math
+                                </Card.Title>
+                                <Card.Text  className="wd-dashboard-course-description overflow-hidden" style={{ height: "100px" }}>
+                                Align Math Foundations</Card.Text>
+                                <Button variant="primary">Go</Button>
+                            </Card.Body>
+                        </Link>
+                    </Card>
+                </Col>
 
-        <div className="wd-dashboard-course">
-            <Link to="/Kambaz/Courses/1234/Home"
-                    className="wd-dashboard-course-link" >
-                <img src="/images/Math.jpg" width={200} />
-                <div>
-                <h5> Align Math </h5>
-                <p className="wd-dashboard-course-title">
-                    Align Math Foundations  </p>
-                <button> Go </button>
-                </div>
-            </Link>
-        </div>
+                <Col className="wd-dashboard-course" style={{ width: "300px" }}>
+                    <Card>
+                        <Link to="/Kambaz/Courses/1234/Home"
+                            className="wd-dashboard-course-link text-decoration-none text-dark">
+                            <Card.Img variant="top" src="/images/5004.jpg" width="100%" height={160}/>
+                            <Card.Body>
+                                <Card.Title className="wd-dashboard-course-title text-nowrap overflow-hidden">
+                                Object-Oriented Design
+                                </Card.Title>
+                                <Card.Text  className="wd-dashboard-course-description overflow-hidden" style={{ height: "100px" }}>
+                                Spring 2025</Card.Text>
+                                <Button variant="primary">Go</Button>
+                            </Card.Body>
+                        </Link>
+                    </Card>
+                </Col>
 
-        <div className="wd-dashboard-course">
-            <Link to="/Kambaz/Courses/1234/Home"
-                    className="wd-dashboard-course-link" >
-                <img src="/images/5004.jpg" width={200} />
-                <div>
-                <h5> Object-Oriented Design </h5>
-                <p className="wd-dashboard-course-title">
-                    Spring 2025  </p>
-                <button> Go </button>
-                </div>
-            </Link>
-        </div>
+                <Col className="wd-dashboard-course" style={{ width: "300px" }}>
+                    <Card>
+                        <Link to="/Kambaz/Courses/1234/Home"
+                            className="wd-dashboard-course-link text-decoration-none text-dark">
+                            <Card.Img variant="top" src="/images/5002.jpg" width="100%" height={160}/>
+                            <Card.Body>
+                                <Card.Title className="wd-dashboard-course-title text-nowrap overflow-hidden">
+                                Discrete Structures
+                                </Card.Title>
+                                <Card.Text  className="wd-dashboard-course-description overflow-hidden" style={{ height: "100px" }}>
+                                Fall 2024</Card.Text>
+                                <Button variant="primary">Go</Button>
+                            </Card.Body>
+                        </Link>
+                    </Card>
+                </Col>
 
-        <div className="wd-dashboard-course">
-            <Link to="/Kambaz/Courses/1234/Home"
-                    className="wd-dashboard-course-link" >
-                <img src="/images/5002.jpg" width={200} />
-                <div>
-                <h5> Discrete Structures </h5>
-                <p className="wd-dashboard-course-title">
-                    Fall 2024  </p>
-                <button> Go </button>
-                </div>
-            </Link>
-        </div>
+                <Col className="wd-dashboard-course" style={{ width: "300px" }}>
+                    <Card>
+                        <Link to="/Kambaz/Courses/1234/Home"
+                            className="wd-dashboard-course-link text-decoration-none text-dark">
+                            <Card.Img variant="top" src="/images/5008.jpg" width="100%" height={160}/>
+                            <Card.Body>
+                                <Card.Title className="wd-dashboard-course-title text-nowrap overflow-hidden">
+                                Data Structure and Algorithms
+                                </Card.Title>
+                                <Card.Text  className="wd-dashboard-course-description overflow-hidden" style={{ height: "100px" }}>
+                                Spring 2025</Card.Text>
+                                <Button variant="primary">Go</Button>
+                            </Card.Body>
+                        </Link>
+                    </Card>
+                </Col>
 
-        <div className="wd-dashboard-course">
-            <Link to="/Kambaz/Courses/1234/Home"
-                    className="wd-dashboard-course-link" >
-                <img src="/images/5008.jpg" width={200} />
-                <div>
-                <h5> Data Structure and Algorithms </h5>
-                <p className="wd-dashboard-course-title">
-                    Spring 2024  </p>
-                <button> Go </button>
-                </div>
-            </Link>
+
+            </Row>
+
         </div>
       </div>
     </div>
