@@ -4,8 +4,12 @@ import { FaPlus, FaSearch } from "react-icons/fa";
 import LessonControlButtons from "../Modules/LessonControlButtons";
 import { IoEllipsisVertical } from "react-icons/io5";
 import { LuNotebookPen } from "react-icons/lu";
+import { Link, useParams } from "react-router-dom";
+import { assignments } from "../../Database";
 
 export default function Assignments() {
+    const { cid } = useParams();
+
     return (
       <div id="wd-assignments">
         <div className="d-flex justify-content-between align-items-center mb-3">
@@ -45,18 +49,17 @@ export default function Assignments() {
                 </div>
 
                 <ListGroup className="wd-lessons rounded-0">
-                    <ListGroup.Item className="wd-lesson p-3 ps-1 d-flex justify-content-between align-items-center">
-                        <div className="d-flex align-items-start gap-3">
-                            <BsGripVertical className="me-2 fs-3" />
-                            <LuNotebookPen className="me-2 fs-3 text-success" />
-                        </div>
-                        <div className="flex-grow-1 ms-3">
-                            <div>
+                    {assignments.filter((assignment: any) => assignment.course === cid)
+                        .map((assignment: any) => (
+                        <ListGroup.Item className="wd-lesson p-3 ps-1 d-flex justify-content-between align-items-center"
+                            key={assignment} as={Link} to={`/Kambaz/Courses/${cid}/Assignments/${assignment._id}`}>
+                            <div className="d-flex align-items-start gap-3">
+                                <BsGripVertical className="me-2 fs-3" />
+                                <LuNotebookPen className="me-2 fs-3 text-success" />
+                            </div>
+                            <div className="flex-grow-1 ms-3">                                    
                                 <div className="fw-bold">
-                                    <a href="#/Kambaz/Courses/1234/Assignments/123"
-                                        className="wd-assignment-link text-decoration-none text-dark">
-                                            A1
-                                    </a>
+                                    {assignment.title}
                                 </div>
                                 <div className="text-muted small">
                                     <span className="text-danger">Multiple Modules</span> |
@@ -65,66 +68,14 @@ export default function Assignments() {
                                     <strong>Due</strong> May 13 at 11:59pm | 100 pts
                                 </div>
                             </div>
-                        </div>
-                        <div className="d-flex align-items-center gap-3">
-                            <LessonControlButtons />
-                        </div>
-                    </ListGroup.Item>
-                        
-                    <ListGroup.Item className="wd-lesson p-3 ps-1 d-flex justify-content-between align-items-center">
-                        <div className="d-flex align-items-start gap-3">
-                            <BsGripVertical className="me-2 fs-3" />
-                            <LuNotebookPen className="me-2 fs-3 text-success" />
-                        </div>
-                        <div className="flex-grow-1 ms-3">
-                            <div>
-                                <div className="fw-bold">
-                                    <a href="#/Kambaz/Courses/1234/Assignments/123"
-                                        className="wd-assignment-link text-decoration-none text-dark">
-                                            A2
-                                    </a>
-                                </div>
-                                <div className="text-muted small">
-                                    <span className="text-danger">Multiple Modules</span> |
-                                    <strong className="ms-1">Not available until</strong> May 13 at 12:00am |
-                                    <br />
-                                    <strong >Due</strong> May 20 at 11:59pm | 100 pts
-                                </div>
+                            <div className="d-flex align-items-center gap-3">
+                                <LessonControlButtons />
                             </div>
-                        </div>
-                        <div className="d-flex align-items-center gap-3">
-                            <LessonControlButtons />
-                        </div>
-                    </ListGroup.Item>
-
-                    <ListGroup.Item className="wd-lesson p-3 ps-1 d-flex justify-content-between align-items-center">
-                        <div className="d-flex align-items-start gap-3">
-                            <BsGripVertical className="me-2 fs-3" />
-                            <LuNotebookPen className="me-2 fs-3 text-success" />
-                        </div>
-                        <div className="flex-grow-1 ms-3">
-                            <div>
-                                <div className="fw-bold">
-                                    <a href="#/Kambaz/Courses/1234/Assignments/123"
-                                        className="wd-assignment-link text-decoration-none text-dark">
-                                            A3
-                                    </a>
-                                </div>
-                                <div className="text-muted small">
-                                    <span className="text-danger">Multiple Modules</span> |
-                                    <strong className="ms-1">Not available until</strong> May 20 at 12:00am |
-                                    <br />
-                                    <strong>Due</strong> May 27 at 11:59pm | 100 pts
-                                </div>
-                            </div>
-                        </div>
-                        <div className="d-flex align-items-center gap-3">
-                            <LessonControlButtons />
-                        </div>
-                    </ListGroup.Item>
+                        </ListGroup.Item>       
+                    ))}      
                 </ListGroup>
             </ListGroup.Item>
-        </ListGroup>
+         </ListGroup>
       </div>
   );}
   

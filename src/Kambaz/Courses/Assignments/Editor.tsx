@@ -1,12 +1,21 @@
 import { Button, Card, Col, FormCheck, FormControl, FormGroup, FormLabel, FormSelect, Row } from "react-bootstrap";
+import { Link, useParams } from "react-router";
+import { assignments } from "../../Database";
 
 export default function AssignmentEditor() {
+    const { aid } = useParams();
+    const { cid } = useParams();
+
     return (
         <div id="wd-assignments-editor">
             <FormGroup className="mb-1" controlId="wd-textarea">
                 <FormLabel>Assignment Name</FormLabel>
-                <FormControl type="text" defaultValue="A1" />
+                {assignments.filter((assignment: any) => assignment._id === aid)
+                    .map((assignment: any) => (
+                        <FormControl type="text" defaultValue={`${assignment.title}`} />
+                    ))}
             </FormGroup>
+
             <br /><br />
             <FormGroup className="mb-1">
                 <Card className="p-3 border">
@@ -127,15 +136,16 @@ export default function AssignmentEditor() {
                             
                         </FormGroup>
                     
-                        
-
                     </Card>
                     
                 </Col>
             </FormGroup>
 
-            <Button variant="danger" className="me-1 float-end">Save</Button>
-            <Button variant="secondary" className="me-1 float-end">Cancel</Button>
+            
+            <Button variant="danger" className="me-1 float-end" 
+                as={Link} to={`/Kambaz/Courses/${cid}/Assignments`}>Save</Button>
+            <Button variant="secondary" className="me-1 float-end"
+                as={Link} to={`/Kambaz/Courses/${cid}/Assignments`}>Cancel</Button>
             
         </div>
 );}
