@@ -1,4 +1,4 @@
-import { Button, Card, Col, FormCheck, FormControl, FormGroup, FormLabel, FormSelect, Row } from "react-bootstrap";
+import { Card, Col, FormCheck, FormControl, FormGroup, FormLabel, FormSelect, Row } from "react-bootstrap";
 import { Link, useParams } from "react-router";
 import { assignments } from "../../Database";
 
@@ -141,11 +141,19 @@ export default function AssignmentEditor() {
                 </Col>
             </FormGroup>
 
+            <Link
+                to={`/Kambaz/Courses/${cid}/Assignments`}
+                className="btn btn-danger me-2 float-end">
+                Save
+            </Link>
+
+            <Link
+                to={`/Kambaz/Courses/${cid}/Assignments`}
+                className="btn btn-secondary me-1 float-end">
+                Cancel
+            </Link>
             
-            <Button variant="danger" className="me-1 float-end" 
-                as={Link} to={`/Kambaz/Courses/${cid}/Assignments`}>Save</Button>
-            <Button variant="secondary" className="me-1 float-end"
-                as={Link} to={`/Kambaz/Courses/${cid}/Assignments`}>Cancel</Button>
+           
             
         </div>
 );}
