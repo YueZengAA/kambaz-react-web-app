@@ -1,14 +1,46 @@
-import { Button, FormControl, InputGroup, ListGroup } from "react-bootstrap";
+import { Button, FormControl, InputGroup, ListGroup, Modal } from "react-bootstrap";
 import { BsGripVertical, BsPlus } from "react-icons/bs";
-import { FaPlus, FaSearch } from "react-icons/fa";
-import LessonControlButtons from "../Modules/LessonControlButtons";
+import { FaPlus, FaSearch, FaTrash } from "react-icons/fa";
 import { IoEllipsisVertical } from "react-icons/io5";
 import { LuNotebookPen } from "react-icons/lu";
-import { Link, useParams } from "react-router-dom";
-import { assignments } from "../../Database";
+import { useParams, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import GreenCheckmark from "../Modules/GreenCheckmark";
+import { deleteAssignment } from "./reducer";
+import { useState } from "react";
+import type { RootState } from "../../store";
+
+
 
 export default function Assignments() {
     const { cid } = useParams();
+    const navigate = useNavigate();
+    const { assignments } = useSelector((state: any) => state.assignmentsReducer);
+
+    const dispatch = useDispatch();
+    const [showConfirm, setShowConfirm] = useState(false);
+    const [selectedAssignmentId, setSelectedAssignmentId] = useState<string | null>(null);
+
+    const handleDeleteClick = (assignmentId: string) => {
+        setSelectedAssignmentId(assignmentId);
+        setShowConfirm(true);
+    };
+
+    const confirmDelete = () => {
+        if (selectedAssignmentId) {
+        dispatch(deleteAssignment(selectedAssignmentId));
+        }
+        setShowConfirm(false);
+        setSelectedAssignmentId(null);
+    };
+
+    const cancelDelete = () => {
+        setShowConfirm(false);
+        setSelectedAssignmentId(null);
+    };
+
+    const currentUser = useSelector((state: RootState) => state.accountReducer.currentUser);
+    if (!currentUser) return null;
 
     return (
       <div id="wd-assignments">
@@ -20,16 +52,19 @@ export default function Assignments() {
                 <FormControl id="wd-search-assignment" placeholder="Search..." aria-label="Search"/>
             </InputGroup>
 
-            <div className="d-flex gap-2">
-                <Button variant="danger" size="lg" className="me-1 float-end" id="wd-add-assignment">
-                    <FaPlus className="position-relative me-2"/>
-                    Assignment
-                </Button>
-                <Button variant="secondary" size="lg" className="me-1 float-end" id="wd-add-assignment-group">
-                    <FaPlus className="position-relative me-2" />
-                    Group
-                </Button>
-            </div>
+            {currentUser.role === "FACULTY" && (
+                <><div className="d-flex gap-2">
+                    <Button variant="danger" size="lg" className="me-1 float-end" id="wd-add-assignment"
+                        onClick={() => navigate(`/Kambaz/Courses/${cid}/Assignments/new`)}>
+                        <FaPlus className="position-relative me-2"/>
+                        Assignment
+                    </Button>
+                    <Button variant="secondary" size="lg" className="me-1 float-end" id="wd-add-assignment-group">
+                        <FaPlus className="position-relative me-2" />
+                        Group
+                    </Button>
+                </div></>)}
+            
         </div>
 
         <ListGroup className="rounded-0" id="wd-assignment-list">
@@ -52,10 +87,13 @@ export default function Assignments() {
                     {assignments.filter((assignment: any) => assignment.course === cid)
                         .map((assignment: any) => (
                         <ListGroup.Item className="wd-lesson p-3 ps-1 d-flex justify-content-between align-items-center"
-                            key={assignment} as={Link} to={`/Kambaz/Courses/${cid}/Assignments/${assignment._id}`}>
+                            key={assignment._id}>
                             <div className="d-flex align-items-start gap-3">
                                 <BsGripVertical className="me-2 fs-3" />
-                                <LuNotebookPen className="me-2 fs-3 text-success" />
+                                {currentUser.role === "FACULTY" && (
+                                    <LuNotebookPen className="me-2 fs-3 text-success" 
+                                        role="button"
+                                        onClick={() => navigate(`/Kambaz/Courses/${cid}/Assignments/${assignment._id}`)}/>)}
                             </div>
                             <div className="flex-grow-1 ms-3">                                    
                                 <div className="fw-bold">
@@ -68,14 +106,34 @@ export default function Assignments() {
                                     <strong>Due</strong> May 13 at 11:59pm | 100 pts
                                 </div>
                             </div>
-                            <div className="d-flex align-items-center gap-3">
-                                <LessonControlButtons />
-                            </div>
+
+                            {currentUser.role === "FACULTY" && ( 
+                                <>
+                                <div className="d-flex align-items-center gap-3">
+                                <div className="float-end">
+                                      <GreenCheckmark />
+                                      <FaTrash className="text-danger me-2 mb-1" role="button"
+                                            onClick={() => handleDeleteClick(assignment._id)}/>
+                                      <IoEllipsisVertical className="fs-4" />
+                                    </div>
+                                </div></>)}
+                            
                         </ListGroup.Item>       
                     ))}      
                 </ListGroup>
             </ListGroup.Item>
          </ListGroup>
+
+        <Modal show={showConfirm} onHide={cancelDelete} centered>
+            <Modal.Header closeButton>
+            <Modal.Title>Confirm Delete</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>Are you sure you want to delete this assignment?</Modal.Body>
+            <Modal.Footer>
+            <Button variant="secondary" onClick={cancelDelete}>Cancel</Button>
+            <Button variant="danger" onClick={confirmDelete}>Delete</Button>
+            </Modal.Footer>
+        </Modal>
       </div>
   );}
   

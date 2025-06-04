@@ -1,45 +1,72 @@
 import { Card, Col, FormCheck, FormControl, FormGroup, FormLabel, FormSelect, Row } from "react-bootstrap";
-import { Link, useParams } from "react-router";
-import { assignments } from "../../Database";
+import { useNavigate, useParams } from "react-router";
+import { useDispatch, useSelector } from "react-redux";
+import { addAssignment, updateAssignment } from "./reducer";
+import { useEffect, useState } from "react";
 
 export default function AssignmentEditor() {
-    const { aid } = useParams();
-    const { cid } = useParams();
+    const { aid, cid } = useParams();
+
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const { assignments } = useSelector((state: any) => state.assignmentsReducer);
+    const isNew = aid === "new";
+
+    const [assignment, setAssignment] = useState<any>({
+        _id: Date.now().toString(),
+        title: "",
+        description: "",
+        points: "100",
+        dueDate: "2024-05-13",
+        availableFrom: "2024-05-06",
+        availableUntil: "2024-05-20",
+        course: cid,
+      });
+    
+    useEffect(() => {
+        if (!isNew) {
+          const found = assignments.find((a: any) => a._id === aid);
+          if (found) {
+            setAssignment(found);
+          }
+        }
+      }, [aid]);
+    
+    const handleChange = (field: string, value: any) => {
+        setAssignment({ ...assignment, [field]: value });
+      };
+    
+    const handleSave = () => {
+        if (isNew) {
+            dispatch(addAssignment(assignment));
+          } else {
+            dispatch(updateAssignment(assignment));
+          }
+        navigate(`/Kambaz/Courses/${cid}/Assignments`);
+      };
+    
+    const handleCancel = () => {
+        navigate(`/Kambaz/Courses/${cid}/Assignments`);
+      };
 
     return (
         <div id="wd-assignments-editor">
             <FormGroup className="mb-1" controlId="wd-textarea">
                 <FormLabel>Assignment Name</FormLabel>
-                {assignments.filter((assignment: any) => assignment._id === aid)
-                    .map((assignment: any) => (
-                        <FormControl type="text" defaultValue={`${assignment.title}`} />
-                    ))}
+                <FormControl type="text" value={assignment.title}
+                    onChange={(e) => handleChange("title", e.target.value)}/>
             </FormGroup>
 
             <br /><br />
             <FormGroup className="mb-1">
-                <Card className="p-3 border">
-                    <p>
-                        The assignment is <span className="text-danger">available online</span>
-                    </p>
-                    <p>
-                        Submit a link to the landing page of your Web application running on Netlify.
-                    </p>
-                    <p>
-                        The landing page should include the following:
-                    </p>
-                    <p>
-                        <ul>
-                            <li>Your full name and section</li>
-                            <li>Links to each of the lab assignments</li>
-                            <li>Link to the Kambaz application</li>
-                            <li>Links to all relevant source code repositories</li>
-                        </ul>
-                    </p>
-                    <p>
-                        The Kambaz application should include a link to navigate back to the landing page.
-                    </p>
-                </Card>
+                <FormLabel>Description</FormLabel>
+                <FormControl
+                    as="textarea"
+                    rows={10}
+                    value={assignment.description}
+                    onChange={(e) => handleChange("description", e.target.value)}
+                />
+                
             </FormGroup>
             <br /><br/>
 
@@ -49,7 +76,8 @@ export default function AssignmentEditor() {
                     Points
                 </FormLabel>
                 <Col sm={10}>
-                    <FormControl type="text" defaultValue="100"/>
+                    <FormControl type="text" value={assignment.points}
+                        onChange={(e) => handleChange("points", e.target.value)}/>
                 </Col>
             </FormGroup>
 
@@ -119,18 +147,21 @@ export default function AssignmentEditor() {
 
                         <FormGroup className="fw-bold mb-3" id="wd-due-date">
                             <FormLabel>Due</FormLabel>
-                            <FormControl type="date" defaultValue="2024-05-06"/>
+                            <FormControl type="date" value={assignment.dueDate}
+                                onChange={(e) => handleChange("dueDate", e.target.value)}/>
                         </FormGroup>
 
                         <FormGroup className="fw-bold mb-3">
                             <Row>
                                 <Col md={6}>
                                     <FormLabel id="wd-available-from">Available from</FormLabel>
-                                    <FormControl type="date" defaultValue="2024-05-06"/>
+                                    <FormControl type="date" value={assignment.availableFrom}
+                                        onChange={(e) => handleChange("availableFrom", e.target.value)}/>
                                 </Col>
                                 <Col md={6}>
                                     <FormLabel id="wd-available-until">Until</FormLabel>
-                                    <FormControl type="date" defaultValue="2024-05-20"/>
+                                    <FormControl type="date" value={assignment.availableUntil}
+                                        onChange={(e) => handleChange("availableUntil", e.target.value)}/>
                                 </Col>
                             </Row>
                             
@@ -141,17 +172,10 @@ export default function AssignmentEditor() {
                 </Col>
             </FormGroup>
 
-            <Link
-                to={`/Kambaz/Courses/${cid}/Assignments`}
-                className="btn btn-danger me-2 float-end">
-                Save
-            </Link>
 
-            <Link
-                to={`/Kambaz/Courses/${cid}/Assignments`}
-                className="btn btn-secondary me-1 float-end">
-                Cancel
-            </Link>
+            <button className="btn btn-danger me-2 float-end" onClick={handleSave}>Save</button>
+
+            <button className="btn btn-secondary float-end me-2" onClick={handleCancel}>Cancel</button>
             
            
             
