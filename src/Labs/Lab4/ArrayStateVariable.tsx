@@ -17,9 +17,10 @@ export default function ArrayStateVariable() {
    <Button onClick={addElement} variant="success" className="mb-2">Add Element</Button>
    <ListGroup>
         {array.map((item, index) => (
-            <ListGroup.Item key={index} className="d-flex justify-content-between align-items-center"> {item}
-            <Button onClick={() => deleteElement(index)} variant="danger">
-            Delete</Button>
+            <ListGroup.Item key={index} className="d-flex justify-content-between align-items-center">
+              <span>{item}</span>
+              <Button onClick={() => deleteElement(index)} variant="danger">
+              Delete</Button>
             </ListGroup.Item>))}
    </ListGroup>
    <ul>
