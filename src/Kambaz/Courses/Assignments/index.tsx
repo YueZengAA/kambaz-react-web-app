@@ -6,18 +6,22 @@ import { LuNotebookPen } from "react-icons/lu";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import GreenCheckmark from "../Modules/GreenCheckmark";
-import { deleteAssignment } from "./reducer";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { RootState } from "../../store";
-
+import * as coursesClient from "../client";
+import * as assignmentsClient from "./client";
+import { deleteAssignment, setAssignments } from "./reducer";
 
 
 export default function Assignments() {
     const { cid } = useParams();
     const navigate = useNavigate();
-    const { assignments } = useSelector((state: any) => state.assignmentsReducer);
-
     const dispatch = useDispatch();
+
+    const { assignments } = useSelector((state: any) => state.assignmentsReducer);
+    const currentUser = useSelector((state: RootState) => state.accountReducer.currentUser);
+    if (!currentUser) return null;
+    
     const [showConfirm, setShowConfirm] = useState(false);
     const [selectedAssignmentId, setSelectedAssignmentId] = useState<string | null>(null);
 
@@ -26,21 +30,36 @@ export default function Assignments() {
         setShowConfirm(true);
     };
 
-    const confirmDelete = () => {
-        if (selectedAssignmentId) {
-        dispatch(deleteAssignment(selectedAssignmentId));
-        }
-        setShowConfirm(false);
-        setSelectedAssignmentId(null);
-    };
 
     const cancelDelete = () => {
         setShowConfirm(false);
         setSelectedAssignmentId(null);
     };
 
-    const currentUser = useSelector((state: RootState) => state.accountReducer.currentUser);
-    if (!currentUser) return null;
+    const confirmDelete = async () => {
+        if (selectedAssignmentId) {
+            await removeAssignment(selectedAssignmentId); 
+        }
+        setShowConfirm(false);
+        setSelectedAssignmentId(null);
+    };
+
+    const removeAssignment = async (assignmentId: string) => {
+        await assignmentsClient.deleteAssignment(assignmentId);
+        dispatch(deleteAssignment(assignmentId));
+    };
+
+    const fetchAssignments = async () => {
+        if (!cid) return;
+        const assignments = await coursesClient.findAssignments(cid as string);
+        dispatch(setAssignments(assignments));
+    };
+
+
+    useEffect(() => {
+        fetchAssignments();
+    }, [cid]);
+    
 
     return (
       <div id="wd-assignments">
@@ -84,8 +103,7 @@ export default function Assignments() {
                 </div>
 
                 <ListGroup className="wd-lessons rounded-0">
-                    {assignments.filter((assignment: any) => assignment.course === cid)
-                        .map((assignment: any) => (
+                    {assignments.map((assignment: any) => (
                         <ListGroup.Item className="wd-lesson p-3 ps-1 d-flex justify-content-between align-items-center"
                             key={assignment._id}>
                             <div className="d-flex align-items-start gap-3">
