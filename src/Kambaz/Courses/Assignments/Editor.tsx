@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { addAssignment, updateAssignment } from "./reducer";
 import { useEffect, useState } from "react";
 import * as assignmentsClient from "./client";
+import * as coursesClient from "../client";
 
 export default function AssignmentEditor() {
     const { aid, cid } = useParams();
@@ -39,7 +40,7 @@ export default function AssignmentEditor() {
 
     const handleSave = async () => {
         if (isNew) {
-            const created = await assignmentsClient.createAssignment(cid as string, assignment); 
+            const created = await coursesClient.createAssignment(cid as string, assignment); 
             dispatch(addAssignment(created));
         } else {
             const updated = await assignmentsClient.updateAssignment(assignment);

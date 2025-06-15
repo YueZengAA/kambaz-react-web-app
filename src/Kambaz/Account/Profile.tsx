@@ -12,8 +12,8 @@ export default function Profile() {
     const { currentUser } = useSelector((state: any) => state.accountReducer);
 
     const updateProfile = async () => {
-        const updatedProfile = await client.updateUser(profile);
-        dispatch(setCurrentUser(updatedProfile));
+        await client.updateUser(profile);
+        dispatch(setCurrentUser(profile));
     };
 
     const fetchProfile = () => {
@@ -42,8 +42,8 @@ export default function Profile() {
                         onChange={(e) => setProfile({ ...profile, firstName: e.target.value })} />
                     <Form.Control defaultValue={profile.lastName} id="wd-lastname" className="mb-2" 
                         onChange={(e) => setProfile({ ...profile, lastName:  e.target.value })}/>
-                    <Form.Control defaultValue={profile.dob} id="wd-dob" className="mb-2" 
-                        onChange={(e) => setProfile({ ...profile, dob: e.target.value })} type="date" value={profile.dob?.slice(0, 10)}/>
+                    <Form.Control value={profile.dob?.slice(0, 10) || ""} id="wd-dob" className="mb-2" 
+                        onChange={(e) => setProfile({ ...profile, dob: e.target.value })} type="date"/>
                     <Form.Control defaultValue={profile.email} id="wd-email" type="email" className="mb-2" 
                         onChange={ (e) => setProfile({ ...profile, email: e.target.value })}/>
                     <select onChange={(e) => setProfile({ ...profile, role:  e.target.value })}
