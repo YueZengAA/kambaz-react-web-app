@@ -10,6 +10,11 @@ import { useSelector } from "react-redux";
 import type { RootState } from "../store";
 import { useEffect, useState } from "react";
 import * as courseClient from "./client";
+import Quizzes from "./Quizzes";
+import QuizEditor from "./Quizzes/editor";
+import QuizDetails from "./Quizzes/Details";
+import DetailsEditor from "./Quizzes/DetailsEditor";
+import QuestionsEditor from "./Quizzes/QuestionsEditor";
 
 
 export default function Courses() {
@@ -47,6 +52,15 @@ export default function Courses() {
                     <Route path="Assignments" element={<Assignments/>} />
                     <Route path="Assignments/:aid" element={<AssignmentEditor/>} />
                     <Route path="People" element={<PeopleTable users={users}/>} />
+                    <Route path="Quizzes" element={<Quizzes/>} />
+                    <Route path="Quizzes/:qid/Details" element={<QuizDetails/>} />
+                    <Route path="Quizzes/:qid/Editor/*" element={<QuizEditor/>} >
+                        <Route index element={<DetailsEditor />} />
+                        <Route path="DetailsEditor" element={<DetailsEditor />} />
+                        <Route path="QuestionsEditor" element={<QuestionsEditor />} />
+                    </Route>
+                        
+                
                 </Routes>
                 </div>
             </div>

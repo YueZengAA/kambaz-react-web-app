@@ -58,3 +58,10 @@ export const createAssignment = async (courseId: string, assignment: any) => {
   return response.data;
 };
 
+
+
+export const findQuizzes = async (courseId: string) => {
+  const response = await axiosWithCredentials.get(`${COURSES_API}/${courseId}/quizzes`);
+  return response.data;
+};
+
