@@ -1,39 +1,60 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import * as quizzesClient from "./client";
+import * as coursesClient from "../client";
 import { Card, Col, FormControl, FormGroup, FormLabel, FormSelect, Row } from "react-bootstrap";
+import { useOutletContext } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { updateQuiz, addQuiz } from "./reducer";
+
+type QuizContextType = {
+    quiz: any;
+    setQuiz: React.Dispatch<React.SetStateAction<any>>;
+};
 
 export default function DetailsEditor() {
     const { cid, qid } = useParams();
     const navigate = useNavigate();
-    const [quiz, setQuiz] = useState<any>(null);
+    const dispatch = useDispatch();
+    const {quiz, setQuiz} = useOutletContext<QuizContextType>();
+    const isNew = qid === "new";
     
     const handleChange = (field: string, value: any) => {
         setQuiz({ ...quiz, [field]: value });
       };
-
-    const fetchQuizDetails = async () => {
-        const quiz = await quizzesClient.findQuizById(qid as string)
-        setQuiz(quiz);
-    }
 
     const handleCancel = () => {
         navigate(`/Kambaz/Courses/${cid}/Quizzes`);
     };
 
     const handleSave = async () => {   
-        navigate(`/Kambaz/Courses/${cid}/Quizzes/${qid}/Details`);
+        if (isNew) {
+            const created = await coursesClient.createQuiz(cid as string, quiz); 
+            dispatch(addQuiz(created));
+            navigate(`/Kambaz/Courses/${cid}/Quizzes/${created._id}/Details`)
+        } else {
+            const updated = await quizzesClient.updateQuiz(quiz);
+            dispatch(updateQuiz(updated));
+            navigate(`/Kambaz/Courses/${cid}/Quizzes/${qid}/Details`);
+        }
+        
     };
 
-    const handleSaveAndPublish = async () => {   
+    const handleSaveAndPublish = async () => {
+        const quizToPublish = { ...quiz, status: "PUBLISH" };
+        if (isNew) {
+            const created = await coursesClient.createQuiz(cid as string, quizToPublish); 
+            dispatch(addQuiz(created));
+        } else {
+            const updated = await quizzesClient.updateQuiz(quizToPublish);
+            dispatch(updateQuiz(updated));  
+        }
         navigate(`/Kambaz/Courses/${cid}/Quizzes`);
     };
-    
-    useEffect(() => {
-        fetchQuizDetails();
-    }, [qid]);
 
-    if (!quiz) return <div>Loading...</div>;
+    useEffect(() => {}, [qid]);
+
+    if (!quiz) return <div>Loading details ...</div>;
         
     return (
         <div id="wd-quiz-editor-details">
@@ -59,11 +80,11 @@ export default function DetailsEditor() {
                     Quiz Type
                 </FormLabel>
                 <Col sm={5}>
-                    <FormSelect>
-                        <option selected value="GQ">Graded Quiz</option>
-                        <option value="PQ">Practice Quiz</option>
-                        <option value="GS">Graded Survey</option>
-                        <option value="US">Ungraded Survey</option>
+                    <FormSelect value={quiz.type} onChange={(e) => handleChange("type", e.target.value)}>
+                        <option value="Graded Quiz">Graded Quiz</option>
+                        <option value="Practice Quiz">Practice Quiz</option>
+                        <option value="Graded Survey">Graded Survey</option>
+                        <option value="Ungraded Survey">Ungraded Survey</option>
                     </FormSelect>
                 </Col>
             </FormGroup>
@@ -73,8 +94,7 @@ export default function DetailsEditor() {
                     Points
                 </FormLabel>
                 <Col sm={5}>
-                    <FormControl type="text" value={quiz.points}
-                        onChange={(e) => handleChange("points", e.target.value)}/>
+                    <FormControl type="text" value={quiz.points}/>
                 </Col>
             </FormGroup>
 
@@ -83,11 +103,11 @@ export default function DetailsEditor() {
                     Assignment Group
                 </FormLabel>
                 <Col sm={5}>
-                    <FormSelect>
-                        <option selected value="QUIZZES">Quizzes</option>
-                        <option value="EXAMS">Exams</option>
-                        <option value="ASSIGNMENTS">Assignments</option>
-                        <option value="PROJECT">Project</option>
+                    <FormSelect value={quiz.group} onChange={(e) => handleChange("group", e.target.value)}>
+                        <option value="Quizzes">Quizzes</option>
+                        <option value="Exams">Exams</option>
+                        <option value="Assignments">Assignments</option>
+                        <option value="Project">Project</option>
                     </FormSelect>
                 </Col>
             </FormGroup>
@@ -97,8 +117,9 @@ export default function DetailsEditor() {
                     Shuffle Answers
                 </FormLabel>
                 <Col sm={5}>
-                    <FormSelect>
-                        <option selected value="YES">Yes</option>
+                    <FormSelect value={quiz.shuffleAnswers} 
+                        onChange={(e) => handleChange("shuffleAnswers", e.target.value)}>
+                        <option value="YES">Yes</option>
                         <option value="NO">No</option>
                     </FormSelect>
                 </Col>
@@ -109,8 +130,8 @@ export default function DetailsEditor() {
                     Time Limit (min)
                 </FormLabel>
                 <Col sm={5}>
-                    <FormControl type="text" value="20"
-                        onChange={(e) => handleChange("", e.target.value)}/>
+                    <FormControl type="text" value={quiz.timeLimit}
+                        onChange={(e) => handleChange("timeLimit", e.target.value)}/>
                 </Col>
             </FormGroup>
 
@@ -119,10 +140,19 @@ export default function DetailsEditor() {
                     Allow Multiple Attempts
                 </FormLabel>
                 <Col sm={5}>
-                    <FormSelect>
-                        <option value="YES">Yes</option>
-                        <option selected value="NO">No</option>
-                    </FormSelect>
+                    <Card className="p-3">
+                        <FormSelect className="mb-3" value={quiz.multipleAttempts}
+                            onChange={(e) => handleChange("multipleAttempts", e.target.value)}>
+                            <option value="YES">Yes</option>
+                            <option value="NO">No</option>
+                        </FormSelect>
+                        <FormGroup className="fw-bold mb-3" id="wd-due-date">
+                            <FormLabel>How Many Attempts</FormLabel>
+                            <FormControl type="text" defaultValue={quiz.howManyAttempts}
+                                onChange={(e) => handleChange("howManyAttempts", e.target.value)}/>
+                        </FormGroup>
+                    </Card>
+                    
                 </Col>
             </FormGroup>
 
@@ -132,14 +162,15 @@ export default function DetailsEditor() {
                 </FormLabel>
                 <Col sm={5}>
                     <Card className="p-3">
-                        <FormSelect className="mb-3">
-                            <option selected value="YES">Yes</option>
+                        <FormSelect className="mb-3" value={quiz.showCorrectAnswers}
+                            onChange={(e) => handleChange("showCorrectAnswers", e.target.value)}>
+                            <option value="YES">Yes</option>
                             <option value="NO">No</option>
                         </FormSelect>
                         <FormGroup className="fw-bold mb-3" id="wd-due-date">
                             <FormLabel>After</FormLabel>
-                            <FormControl type="date" value="2025-06-15"
-                                onChange={(e) => handleChange("dueDate", e.target.value)}/>
+                            <FormControl type="date" defaultValue={quiz.showCorrectAnswersAfter}
+                                onChange={(e) => handleChange("showCorrectAnswersAfter", e.target.value)}/>
                         </FormGroup>
                     </Card>
                 </Col>
@@ -150,8 +181,8 @@ export default function DetailsEditor() {
                     Access Code
                 </FormLabel>
                 <Col sm={5}>
-                    <FormControl type="text" value=""
-                        onChange={(e) => handleChange("", e.target.value)}/>
+                    <FormControl type="text" value={quiz.accessCode}
+                        onChange={(e) => handleChange("accessCode", e.target.value)}/>
                 </Col>
             </FormGroup>
 
@@ -160,8 +191,9 @@ export default function DetailsEditor() {
                     One Question at a Time
                 </FormLabel>
                 <Col sm={5}>
-                    <FormSelect>
-                        <option selected value="YES">Yes</option>
+                    <FormSelect value={quiz.oneQuestionAtATime}
+                        onChange={(e) => handleChange("oneQuestionAtATime", e.target.value)}>
+                        <option value="YES">Yes</option>
                         <option value="NO">No</option>
                     </FormSelect>
                 </Col>
@@ -172,9 +204,10 @@ export default function DetailsEditor() {
                     Webcam Required
                 </FormLabel>
                 <Col sm={5}>
-                    <FormSelect>
+                    <FormSelect value={quiz.webcamRequired}
+                        onChange={(e) => handleChange("webcamRequired", e.target.value)}>
                         <option value="YES">Yes</option>
-                        <option selected value="NO">No</option>
+                        <option value="NO">No</option>
                     </FormSelect>
                 </Col>
             </FormGroup>
@@ -184,9 +217,10 @@ export default function DetailsEditor() {
                     Lock Questions After Answering
                 </FormLabel>
                 <Col sm={5}>
-                    <FormSelect>
+                    <FormSelect value={quiz.lockQuestions}
+                        onChange={(e) => handleChange("lockQuestions", e.target.value)}>
                         <option value="YES">Yes</option>
-                        <option selected value="NO">No</option>
+                        <option value="NO">No</option>
                     </FormSelect>
                 </Col>
             </FormGroup>
@@ -204,21 +238,21 @@ export default function DetailsEditor() {
 
                         <FormGroup className="fw-bold mb-3" id="wd-due-date">
                             <FormLabel>Due</FormLabel>
-                            <FormControl type="date" value="2025-06-25"
-                                onChange={(e) => handleChange("dueDate", e.target.value)}/>
+                            <FormControl type="date" defaultValue={quiz.due}
+                                onChange={(e) => handleChange("due", e.target.value)}/>
                         </FormGroup>
 
                         <FormGroup className="fw-bold mb-3">
                             <Row>
                                 <Col md={6}>
                                     <FormLabel id="wd-available-from">Available from</FormLabel>
-                                    <FormControl type="date" value="2025-06-10"
-                                        onChange={(e) => handleChange("availableFrom", e.target.value)}/>
+                                    <FormControl type="date" defaultValue={quiz.start}
+                                        onChange={(e) => handleChange("start", e.target.value)}/>
                                 </Col>
                                 <Col md={6}>
                                     <FormLabel id="wd-available-until">Until</FormLabel>
-                                    <FormControl type="date" value="2025-06-25"
-                                        onChange={(e) => handleChange("availableUntil", e.target.value)}/>
+                                    <FormControl type="date" defaultValue={quiz.until}
+                                        onChange={(e) => handleChange("until", e.target.value)}/>
                                 </Col>
                             </Row> 
                         </FormGroup>
@@ -231,5 +265,6 @@ export default function DetailsEditor() {
             <button className="btn btn-danger me-2 float-end" onClick={handleSaveAndPublish}>Save and Publish</button>
             <button className="btn btn-secondary float-end me-2" onClick={handleCancel}>Cancel</button>
         </div>
+        
     )
 }

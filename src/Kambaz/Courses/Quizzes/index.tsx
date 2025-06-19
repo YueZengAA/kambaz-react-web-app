@@ -66,7 +66,7 @@ export default function Quizzes() {
             {currentUser.role === "FACULTY" && (
                 <div className="d-flex gap-2 mb-3">
                     <Button variant="danger" size="lg" className="ms-auto" id="wd-add-assignment"
-                        onClick={() => navigate(`/Kambaz/Courses/${cid}/Quizzes/new`)}>
+                        onClick={() => navigate(`/Kambaz/Courses/${cid}/Quizzes/new/Editor/DetailsEditor`)}>
                         <FaPlus className="position-relative me-2"/>
                         Quiz
                     </Button>

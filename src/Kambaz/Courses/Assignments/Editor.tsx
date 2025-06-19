@@ -8,7 +8,6 @@ import * as coursesClient from "../client";
 
 export default function AssignmentEditor() {
     const { aid, cid } = useParams();
-
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { assignments } = useSelector((state: any) => state.assignmentsReducer);

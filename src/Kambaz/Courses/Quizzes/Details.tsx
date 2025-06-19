@@ -37,7 +37,8 @@ export default function QuizDetails() {
 
                 {currentUser.role === "FACULTY" && (
                     <div className="ms-auto d-flex gap-2">
-                        <Button variant="secondary">           
+                        <Button variant="secondary"
+                            onClick={() => navigate(`/Kambaz/Courses/${cid}/Quizzes/${quiz._id}/Preview`)}>           
                             Preview
                         </Button>
                         <Button variant="secondary" 
@@ -54,17 +55,14 @@ export default function QuizDetails() {
                     {[
                         ["Quiz Type", quiz.type],
                         ["Points", quiz.points],
-                        ["Assignment Group", quiz.assignmentGroup],
-                        ["Shuffle Answers", quiz.shuffleAnswers ? "Yes" : "No"],
+                        ["Assignment Group", quiz.group],
+                        ["Shuffle Answers", quiz.shuffleAnswers],
                         ["Time Limit", `${quiz.timeLimit} Minutes`],
-                        ["Multiple Attempts", quiz.multipleAttempts ? "Yes" : "No"],
-                        ["View Responses", quiz.viewResponses],
+                        ["Multiple Attempts", quiz.multipleAttempts],      
                         ["Show Correct Answers", quiz.showCorrectAnswers],
-                        ["One Question at a Time", quiz.oneQuestion ? "Yes" : "No"],
-                        ["Require Respondus LockDown Browser", quiz.lockdownBrowser ? "Yes" : "No"],
-                        ["Required to View Quiz Results", quiz.requireViewResults ? "Yes" : "No"],
-                        ["Webcam Required", quiz.webcamRequired ? "Yes" : "No"],
-                        ["Lock Questions After Answering", quiz.lockQuestions ? "Yes" : "No"],
+                        ["One Question at a Time", quiz.oneQuestionAtATime],
+                        ["Webcam Required", quiz.webcamRequired],
+                        ["Lock Questions After Answering", quiz.lockQuestions],
                     ].map(([label, value]) => (
                         <div className="row mb-1" key={label}>
                             <div className="col-6 fw-semibold text-end">{label}</div>
