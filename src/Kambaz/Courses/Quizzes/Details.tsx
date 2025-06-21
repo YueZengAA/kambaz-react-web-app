@@ -41,7 +41,7 @@ export default function QuizDetails() {
                             onClick={() => navigate(`/Kambaz/Courses/${cid}/Quizzes/${quiz._id}/Preview`)}>           
                             Preview
                         </Button>
-                        <Button variant="secondary" 
+                        <Button variant="danger" 
                             onClick={() => navigate(`/Kambaz/Courses/${cid}/Quizzes/${quiz._id}/Editor/DetailsEditor`)}>           
                             Edit
                         </Button>

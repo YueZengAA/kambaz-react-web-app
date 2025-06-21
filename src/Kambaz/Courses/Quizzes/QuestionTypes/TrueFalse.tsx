@@ -1,16 +1,22 @@
+import { Card, Col, FormCheck, Row } from "react-bootstrap";
+
 export default function TrueFalse({ question, index }: { question: any; index: number }) {
     return (
         <div className="mb-4">
-        <h5>Question {index + 1} ({question.points} pts)</h5>
-        <p>{question.question}</p>
-        <div>
-            <input type="radio" name={`q${index}`} id={`q${index}-true`} />
-            <label htmlFor={`q${index}-true`} className="ms-2">True</label>
-        </div>
-        <div>
-            <input type="radio" name={`q${index}`} id={`q${index}-false`} />
-            <label htmlFor={`q${index}-false`} className="ms-2">False</label>
-        </div>
+            <Card className="p-3 mb-3">  
+                <Row>
+                    <Col sm={10}>
+                        <h4>Question {index + 1}</h4>
+                    </Col>
+                    <Col sm={2}>
+                        <h4>{question.points} pts</h4>
+                    </Col>
+                </Row> 
+                <hr/>
+                <p>{question.question}</p>
+                <FormCheck type="radio" name={`${index}`} label="True" />
+                <FormCheck type="radio" name={`${index}`} label="False" />
+            </Card>
         </div>
     );
 }

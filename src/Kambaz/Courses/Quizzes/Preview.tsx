@@ -37,23 +37,30 @@ export default function QuizPreview() {
             </div>
             <hr/>
             
-            <h4>Quiz Instructions</h4>
-            <Card className="p-3">{quiz.description}</Card>
-            
-            {quiz.questions.map((question: any, index: number) => {
-                const key = `${question._id}-${index}`;
+            <div className="container">
+                <div className="row justify-content-center">
+                    <div className="col-md-8">
+                        <h4>Quiz Instructions</h4>
+                        <Card className="p-3">{quiz.description}</Card>
+                        <br/><br/>
+                        
+                        {quiz.questions.map((question: any, index: number) => {
+                            const key = `${question._id}-${index}`;
 
-                switch (question.type) {
-                    case "MULTIPLE_CHOICE":
-                        return <MultipleChoice key={key} question={question} index={index} />;
-                    case "TRUE_FALSE":
-                        return <TrueFalse key={key} question={question} index={index} />;
-                    case "FILL_BLANK":
-                        return <FillBlank key={key} question={question} index={index} />;
-                    default:
-                        return <div key={key}>Unsupported question type</div>;
-                }
-            })}
+                            switch (question.type) {
+                                case "MULTIPLE_CHOICE":
+                                    return <MultipleChoice key={key} question={question} index={index} />;
+                                case "TRUE_FALSE":
+                                    return <TrueFalse key={key} question={question} index={index} />;
+                                case "FILL_BLANK":
+                                    return <FillBlank key={key} question={question} index={index} />;
+                                default:
+                                    return <div key={key}>Unsupported question type</div>;
+                            }
+                        })}
+                    </div>
+                </div>
+            </div>
             
         </div>
     )

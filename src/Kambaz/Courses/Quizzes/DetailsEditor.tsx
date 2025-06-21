@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import * as quizzesClient from "./client";
 import * as coursesClient from "../client";
@@ -146,7 +146,7 @@ export default function DetailsEditor() {
                             <option value="YES">Yes</option>
                             <option value="NO">No</option>
                         </FormSelect>
-                        <FormGroup className="fw-bold mb-3" id="wd-due-date">
+                        <FormGroup className="mb-3" id="wd-due-date">
                             <FormLabel>How Many Attempts</FormLabel>
                             <FormControl type="text" defaultValue={quiz.howManyAttempts}
                                 onChange={(e) => handleChange("howManyAttempts", e.target.value)}/>
@@ -167,7 +167,7 @@ export default function DetailsEditor() {
                             <option value="YES">Yes</option>
                             <option value="NO">No</option>
                         </FormSelect>
-                        <FormGroup className="fw-bold mb-3" id="wd-due-date">
+                        <FormGroup className="mb-3" id="wd-due-date">
                             <FormLabel>After</FormLabel>
                             <FormControl type="date" defaultValue={quiz.showCorrectAnswersAfter}
                                 onChange={(e) => handleChange("showCorrectAnswersAfter", e.target.value)}/>
