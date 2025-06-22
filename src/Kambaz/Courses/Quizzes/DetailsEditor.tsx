@@ -169,7 +169,7 @@ export default function DetailsEditor() {
                         </FormSelect>
                         <FormGroup className="mb-3" id="wd-due-date">
                             <FormLabel>After</FormLabel>
-                            <FormControl type="date" defaultValue={quiz.showCorrectAnswersAfter}
+                            <FormControl type="date" value={quiz.showCorrectAnswersAfter?.slice(0, 10) || ""}
                                 onChange={(e) => handleChange("showCorrectAnswersAfter", e.target.value)}/>
                         </FormGroup>
                     </Card>
