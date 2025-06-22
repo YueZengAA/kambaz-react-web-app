@@ -29,3 +29,13 @@ export const deleteQuestion = async (quizId: string, questionId: string) => {
     const response = await axiosWithCredentials.delete(`${QUIZZES_API}/${quizId}/questions/${questionId}`);
     return response.data; 
 };
+
+export const findLatestRecord = async (quizId: string) => {
+  const response = await axiosWithCredentials.get(`${QUIZZES_API}/${quizId}/latestRecord`);
+  return response.data;
+}
+
+export const createRecord = async (quizId: string, record: any) => {
+    const response = await axiosWithCredentials.post(`${QUIZZES_API}/${quizId}/createRecord`, record);
+    return response.data;
+};

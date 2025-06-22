@@ -1,6 +1,17 @@
+import { useState } from "react";
 import { Card, Col, FormCheck, Row } from "react-bootstrap";
 
-export default function MultipleChoice({ question, index }: { question: any; index: number }) {
+export default function MultipleChoice(
+    { question, index, onAnswer }: { question: any; index: number; onAnswer: any }
+) {
+    
+    const [selected, setSelected] = useState<number | null>(null);
+
+    const handleSelect = (value: number) => {
+        setSelected(value);
+        onAnswer(question._id, value);
+    };
+
     return (
         <div className="mb-4">
             <Card className="p-3 mb-3">  
@@ -19,6 +30,8 @@ export default function MultipleChoice({ question, index }: { question: any; ind
                         key={i}
                         type="radio"
                         name={`preview-${index}`}
+                        checked={selected === i}
+                        onChange={() => handleSelect(i)}
                         label={opt}
                     />
                 ))}

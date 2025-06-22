@@ -1,12 +1,12 @@
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import * as coursesClient from "../client";
 import * as quizzesClient from "./client";
 import type { RootState } from "../../store";
 import { Button, Dropdown, DropdownItem, ListGroup } from "react-bootstrap";
 import { FaPlus } from "react-icons/fa";
 import { BsGripVertical } from "react-icons/bs";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { setQuizzes, deleteQuiz, updateQuiz } from "./reducer";
 import { IoEllipsisVertical } from "react-icons/io5";
 import "../../style.css"
@@ -19,13 +19,8 @@ export default function Quizzes() {
     
     const { quizzes } = useSelector((state: any) => state.quizzesReducer);
     const currentUser = useSelector((state: RootState) => state.accountReducer.currentUser);
+    const [records, setRecords] = useState<{ [quizId: string]: any }>({});
     if (!currentUser) return null;
-
-    const fetchQuizzes = async () => {
-            if (!cid) return;
-            const quizzes = await coursesClient.findQuizzes(cid as string);
-            dispatch(setQuizzes(quizzes));
-        };
 
     const removeQuiz = async (quizId: string) => {
         await quizzesClient.deleteQuiz(quizId);
@@ -56,6 +51,50 @@ export default function Quizzes() {
             return "Closed";
         }
     };
+
+    const handleClickQuiz = async (quiz: any) => {
+        if (currentUser.role === "FACULTY") {
+            navigate(`/Kambaz/Courses/${cid}/Quizzes/${quiz._id}/Details`);
+            return;
+        }
+        const record = await quizzesClient.findLatestRecord(quiz._id);
+        const isFirstAttempt = !record;
+        const now = new Date();
+        const due = new Date(quiz.until);
+        const available = new Date(quiz.start);
+        if (now > available) {
+            if (isFirstAttempt && now < due) {
+                navigate(`/Kambaz/Courses/${cid}/Quizzes/${quiz._id}/Instruction`);
+            } else {
+                navigate(`/Kambaz/Courses/${cid}/Quizzes/${quiz._id}/Result`);
+            }
+        }
+    }
+
+    const fetchAllRecords = async (quizzes: any[]) => {
+        const recordMap: { [quizId: string]: any } = {};
+        for (const quiz of quizzes) {
+            try {
+                const record = await quizzesClient.findLatestRecord(quiz._id);
+                recordMap[quiz._id] = record;
+            } catch (err: any) {
+                if (err.response?.status === 404) {
+                    recordMap[quiz._id] = null;
+                } else {
+                    console.error(`Error fetching record for quiz ${quiz._id}:`, err);
+                }
+            }
+        }
+        setRecords(recordMap);
+    };
+
+    const fetchQuizzes = async () => {
+        if (!cid) return;
+        const quizzes = await coursesClient.findQuizzes(cid as string);
+        quizzes.sort((a: any, b: any) => new Date(a.start).getTime() - new Date(b.start).getTime());
+        dispatch(setQuizzes(quizzes));
+        await fetchAllRecords(quizzes);
+    };
     
     useEffect(() => {
         fetchQuizzes();
@@ -83,59 +122,72 @@ export default function Quizzes() {
                     </div>
 
                     <ListGroup className="wd-lessons rounded-0">
-                        {quizzes.map((quiz: any) => (
-                            <ListGroup.Item className="wd-lesson p-3 ps-1 d-flex justify-content-between align-items-center"
-                                key={quiz._id}>
-                                <div className="d-flex align-items-start gap-3">
-                                    <BsGripVertical className="me-2 fs-3" />
-                                </div>
-                                <div className="flex-grow-1 ms-3">   
-                                    <Link
-                                        to={`/Kambaz/Courses/${cid}/Quizzes/${quiz._id}/Details`}
-                                        className="fw-bold text-decoration-none text-dark"
-                                    >
-                                        {quiz.name}
-                                    </Link>                                 
-                                    <div className="text-muted small">
-                                        <strong>{getAvailability(quiz)}</strong> |
-                                        <strong> Due</strong> {formatDateTime(quiz.until)} | {quiz.points} pts
-                                    </div>
-                                </div>
+                        {quizzes.length === 0 && currentUser.role === "FACULTY" && (
+                            <div className="p-3 text-muted">
+                                No quizzes yet. Click <strong>"+ Quiz"</strong> button to create one.
+                            </div>
+                        )}
 
-                                {currentUser.role === "FACULTY" && ( 
-                                    <div className="d-flex align-items-center gap-3">
-                                        <StatusCheckmark status={quiz.status} />                                       
-                                        <Dropdown >
-                                            <Dropdown.Toggle
-                                                as="div"
-                                                id="wd-quiz-menu-btn"
-                                                className="no-caret"
-                                                style={{ cursor: "pointer" }}
-                                            >
-                                                <IoEllipsisVertical className="fs-4" />
-                                            </Dropdown.Toggle>
-
-                                            <Dropdown.Menu>
-                                                <Dropdown.Item onClick={() => navigate(`/Kambaz/Courses/${cid}/Quizzes/${quiz._id}/Editor/DetailsEditor`)}>
-                                                    Edit
-                                                </Dropdown.Item>
-                                                <DropdownItem onClick={() => {removeQuiz(quiz._id)}}>
-                                                    Delete
-                                                </DropdownItem>
-                                                <DropdownItem 
-                                                    onClick={() => {
-                                                        const newStatus = quiz.status === "PUBLISH" ? "UNPUBLISH" : "PUBLISH";
-                                                        const updatedQuiz = { ...quiz, status: newStatus };
-                                                        saveQuiz(updatedQuiz);
-                                                    }}>
-                                                    {quiz.status === "PUBLISH" ? "Unpublish" : "Publish"}
-                                                </DropdownItem>
-                                            </Dropdown.Menu>
-                                        </Dropdown>
+                        {quizzes.map((quiz: any) => {
+                            const record = records[quiz._id];
+                            return (
+                                <ListGroup.Item className="wd-lesson p-3 ps-1 d-flex justify-content-between align-items-center"
+                                    key={quiz._id}>
+                                    <div className="d-flex align-items-start gap-3">
+                                        <BsGripVertical className="me-2 fs-3" />
                                     </div>
-                                )}   
-                            </ListGroup.Item>       
-                        ))}      
+                                    <div className="flex-grow-1 ms-3">   
+                                        <Button variant="link" className="fw-bold text-decoration-none text-dark p-0 fs-5" 
+                                            onClick={() => handleClickQuiz(quiz)}
+                                        >
+                                            {quiz.name}
+                                        </Button>
+                                    
+                                        <div className="text-muted small">
+                                            <strong>{getAvailability(quiz)}</strong> |
+                                            <strong> Due</strong> {formatDateTime(quiz.until)} | {quiz.points} pts 
+                                            | {quiz.questions?.length || 0} Questions
+                                            {currentUser.role === "STUDENT" && record && (
+                                                <> | <span className="text-danger"> {record.score} pts</span></>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {currentUser.role === "FACULTY" && ( 
+                                        <div className="d-flex align-items-center gap-3">
+                                            <StatusCheckmark status={quiz.status} />                                       
+                                            <Dropdown >
+                                                <Dropdown.Toggle
+                                                    as="div"
+                                                    id="wd-quiz-menu-btn"
+                                                    className="no-caret"
+                                                    style={{ cursor: "pointer" }}
+                                                >
+                                                    <IoEllipsisVertical className="fs-4" />
+                                                </Dropdown.Toggle>
+
+                                                <Dropdown.Menu>
+                                                    <Dropdown.Item onClick={() => navigate(`/Kambaz/Courses/${cid}/Quizzes/${quiz._id}/Editor/DetailsEditor`)}>
+                                                        Edit
+                                                    </Dropdown.Item>
+                                                    <DropdownItem onClick={() => {removeQuiz(quiz._id)}}>
+                                                        Delete
+                                                    </DropdownItem>
+                                                    <DropdownItem 
+                                                        onClick={() => {
+                                                            const newStatus = quiz.status === "PUBLISH" ? "UNPUBLISH" : "PUBLISH";
+                                                            const updatedQuiz = { ...quiz, status: newStatus };
+                                                            saveQuiz(updatedQuiz);
+                                                        }}>
+                                                        {quiz.status === "PUBLISH" ? "Unpublish" : "Publish"}
+                                                    </DropdownItem>
+                                                </Dropdown.Menu>
+                                            </Dropdown>
+                                        </div>
+                                    )}   
+                                </ListGroup.Item>
+                            )           
+                        })}      
                     </ListGroup>
                 </ListGroup.Item>
             </ListGroup>

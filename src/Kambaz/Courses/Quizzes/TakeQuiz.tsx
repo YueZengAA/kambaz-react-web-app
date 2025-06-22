@@ -3,19 +3,66 @@ import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import type { RootState } from "../../store";
 import * as quizzesClient from "./client";
-import { Button, Card } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import MultipleChoice from "./QuestionTypes/MultipleChoice";
 import TrueFalse from "./QuestionTypes/TrueFalse";
 import FillBlank from "./QuestionTypes/FillBlank";
 
-export default function QuizPreview() {
+export default function QuizTake() {
     const { cid, qid } = useParams();
     const navigate = useNavigate();
     const [quiz, setQuiz] = useState<any>(null);
     const currentUser = useSelector((state: RootState) => state.accountReducer.currentUser);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [answers, setAnswers] = useState<{ [questionId: string]: any }>({});
+
     if (!currentUser) return null;
+
+    const handleAnswerChange = (questionId: string, userAnswer: any) => {
+        setAnswers((prev) => ({ ...prev, [questionId]: userAnswer }));
+    };
+
+    const handleSubmit = async () => {
+        const processedAnswers = quiz.questions.map((q: any) => {
+            const userAnswer = answers[q._id];
+            let isCorrect = false;
+
+            switch (q.type) {
+                case "MULTIPLE_CHOICE":
+                    isCorrect = userAnswer === q.answer;  
+                    break;
+                case "TRUE_FALSE":
+                    isCorrect = userAnswer === q.answer;  
+                    break;
+                case "FILL_BLANK":
+                    const correctAnswers = (q.answer as string[]).map(a => a.trim().toLowerCase());
+                    const userInputs = (userAnswer as string[]).map(a => a.trim().toLowerCase());
+                    isCorrect = JSON.stringify(userInputs) === JSON.stringify(correctAnswers); 
+                    break;
+                default:
+                    isCorrect = false;
+            }
+            
+            return {
+                questionId: q._id,
+                userAnswer,
+                isCorrect,
+            };
+        });
+
+        const score = processedAnswers.reduce((total: number, a: any) => {
+            const question = quiz.questions.find((q: any) => q._id === a.questionId);
+            return a.isCorrect && question ? total + question.points : total;
+        }, 0);
+
+        const newRecord = await quizzesClient.createRecord(quiz._id, {
+            answers: processedAnswers,
+            score,
+        });
+        navigate(`/Kambaz/Courses/${cid}/Quizzes/${quiz._id}/Result`, {
+            state: { record: newRecord },
+        });
+    };
 
     const fetchQuizDetails = async () => {
         const quiz = await quizzesClient.findQuizById(qid as string)
@@ -26,69 +73,13 @@ export default function QuizPreview() {
         fetchQuizDetails();
     }, [qid]);
 
-    const handleAnswerChange = (questionId: string, userAnswer: any) => {
-        setAnswers((prev) => ({ ...prev, [questionId]: userAnswer }));
-    };
-
-    const handleSubmit = () => {
-        const processedAnswers = quiz.questions.map((q: any) => {
-            const userAnswer = answers[q._id];
-            let isCorrect = false;
-
-            switch (q.type) {
-                case "MULTIPLE_CHOICE":
-                case "TRUE_FALSE":
-                    isCorrect = userAnswer === q.answer;
-                    break;
-                case "FILL_BLANK":
-                    const correct = (q.answer as string[]).map(a => a.trim().toLowerCase());
-                    const input = (userAnswer as string[]).map(a => a.trim().toLowerCase());
-                    isCorrect = JSON.stringify(input) === JSON.stringify(correct);
-                    break;
-            }
-            return {
-                questionId: q._id,
-                userAnswer,
-                isCorrect,
-            };
-        });
-
-        const score = processedAnswers.reduce((total: number, a: any) => {
-            const q = quiz.questions.find((q: any) => q._id === a.questionId);
-            return a.isCorrect && q ? total + q.points : total;
-        }, 0);
-
-        const fakeRecord = {
-            answers: processedAnswers,
-            score,
-            attemptNumber: 0,
-            timestamp: new Date().toISOString(),
-        };
-
-        navigate(`/Kambaz/Courses/${cid}/Quizzes/${quiz._id}/PreviewResult`, {
-            state: { record: fakeRecord },
-        });
-    }
-
     if (!quiz) return <div>Loading Preview...</div>;
     
     const currentQuestion = quiz.questions[currentQuestionIndex];
 
     return (
-        <div id="wd-quiz-preview">
-            <div className="d-flex gap-2 align-items-center">
-                <h3 className="">{quiz.name}</h3>
-                    <Button variant="danger"  className="ms-auto"
-                        onClick={() => navigate(`/Kambaz/Courses/${cid}/Quizzes/${quiz._id}/Editor/QuestionsEditor`)}>
-                        Edit
-                    </Button>   
-            </div>
-            <hr/>
+        <div id="wd-quiz-take">
 
-            <h4>Quiz Instructions</h4>
-                <Card className="p-3">{quiz.description}</Card>
-            <br/><br/>
-            
             <div className="row">
                 <div className="col-md-9 border-end">
                     {(() => {

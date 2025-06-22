@@ -1,7 +1,20 @@
-import { Card, Col, FormControl, FormGroup, Row } from "react-bootstrap";
+import { useState } from "react";
+import { Card, Col, FormControl, Row } from "react-bootstrap";
 
-export default function FillBlank({ question, index }: { question: any; index: number }) {
+export default function FillBlank(
+    { question, index, onAnswer }: { question: any; index: number; onAnswer: any }
+) {
     const blanks = Array.isArray(question.answer) ? question.answer : [];
+    
+    const [selected, setSelected] = useState<string[]>(Array(blanks.length).fill(""));
+
+    const handleChange = (value: string, i: number) => {
+        const updated = [...selected];
+        updated[i] = value;
+        setSelected(updated);
+        onAnswer(question._id, updated); 
+    };
+
     return (
         <div className="mb-4">
             <Card className="p-3 mb-3">  
@@ -20,8 +33,9 @@ export default function FillBlank({ question, index }: { question: any; index: n
                             key={i}
                             type="text"
                             className="mb-2"
-                            value=""        
-                            onChange={() => {}}  
+                            name={`preview-${i}`}
+                            value={selected[i] || ""}
+                            onChange={(e) => handleChange(e.target.value, i)}  
                         />
                     ))}
             </Card>

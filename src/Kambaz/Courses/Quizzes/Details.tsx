@@ -27,14 +27,6 @@ export default function QuizDetails() {
         <div id="wd-quiz-details">
             <div className="d-flex gap-2 align-items-center">
                 <h3 className="">{quiz.name}</h3>
-                
-                {currentUser.role === "STUDENT" && (
-                    <Button variant="danger"  className="ms-auto"
-                        onClick={() => navigate(`/Kambaz/Courses/${cid}/Quizzes/${quiz._id}/Take`)}>
-                        Take the Quiz
-                    </Button>
-                )}
-
                 {currentUser.role === "FACULTY" && (
                     <div className="ms-auto d-flex gap-2">
                         <Button variant="secondary"
@@ -51,7 +43,7 @@ export default function QuizDetails() {
             <hr/>
 
             <div className="row">
-                <div className="col-md-6 ">
+                <div className="col-md-7 ">
                     {[
                         ["Quiz Type", quiz.type],
                         ["Points", quiz.points],
@@ -85,10 +77,10 @@ export default function QuizDetails() {
                         </thead>
                         <tbody>
                             <tr className="border-bottom">
-                                <td>{quiz.due}</td>
+                                <td>{new Date(quiz.due).toLocaleString()}</td>
                                 <td>Everyone</td>
-                                <td>{quiz.availableFrom}</td>
-                                <td>{quiz.availableUntil}</td>
+                                <td>{new Date(quiz.start).toLocaleString()}</td>
+                                <td>{new Date(quiz.until).toLocaleString()}</td>
                             </tr>
                         </tbody>
                     </table>

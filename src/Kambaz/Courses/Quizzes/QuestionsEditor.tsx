@@ -221,235 +221,238 @@ export default function QuestionsEditor() {
     };
 
     return (
-        <div className="container">
-            <div className="row justify-content-center">
-                <div className="col-md-8">
-                    <div id="wd-quiz-editor-questions">
-                        <Button variant="secondary" size="lg" className="d-block mx-auto my-4 " id="wd-add-questions"
-                            onClick={handleAddQuestion}
-                            >
-                            <FaPlus className="position-relative me-2"/>
-                            New Question
-                        </Button>
+        <div>
+            <div className="container">
+                <div className="row justify-content-center">
+                    <div className="col-md-8">
+                        <div id="wd-quiz-editor-questions">
+                            <Button variant="secondary" size="lg" className="d-block mx-auto my-4 " id="wd-add-questions"
+                                onClick={handleAddQuestion}
+                                >
+                                <FaPlus className="position-relative me-2"/>
+                                New Question
+                            </Button>
 
-                        {quiz.questions.map((q: any, index: number) => {
-                            const editing = editingQuestions[q._id] || q;
-                            return (
-                                <Card key={index} className="p-3 mb-3"> 
-                                {!editingStates[q._id] ? (
-                                    <>
-                                        <Row>
-                                            <Col sm={10}>
-                                                <h4>Question {index + 1}</h4>
-                                            </Col>
-                                            <Col sm={2}>
-                                                <h4>{editing.points} pts</h4>
-                                            </Col>
-                                        </Row> 
-                                        <hr/>
-                                        <p>{editing.question}</p>
+                            {quiz.questions.map((q: any, index: number) => {
+                                const editing = editingQuestions[q._id] || q;
+                                return (
+                                    <Card key={index} className="p-3 mb-3"> 
+                                    {!editingStates[q._id] ? (
+                                        <>
+                                            <Row>
+                                                <Col sm={10}>
+                                                    <h4>Question {index + 1}</h4>
+                                                </Col>
+                                                <Col sm={2}>
+                                                    <h4>{editing.points} pts</h4>
+                                                </Col>
+                                            </Row> 
+                                            <hr/>
+                                            <p>{editing.question}</p>
 
-                                        {editing.type === "MULTIPLE_CHOICE" && (
-                                            <FormGroup>
-                                                {editing.options.map((opt: string, i: number) => ( 
-                                                    <FormCheck
-                                                        key={i}
-                                                        type="radio"
-                                                        name={`preview-${index}`}
-                                                        checked={editing.answer === i}
-                                                        label={opt}
-                                                        disabled
-                                                    />
-                                                ))}
-                                            </FormGroup>  
-                                        )}
-
-                                        {editing.type === "TRUE_FALSE" && (
-                                            <FormGroup>
-                                                <FormCheck type="radio" label="True" disabled checked={editing.answer === true}/>
-                                                <FormCheck type="radio" label="False" disabled checked={editing.answer === false}/>
-                                            </FormGroup>
-                                        )}
-
-                                        {editing.type === "FILL_BLANK" && (
-                                            <FormGroup>
-                                                {(Array.isArray(editing.answer) ? editing.answer : [])
-                                                    .map((a: string, i: number) => ( 
-                                                    <FormControl
-                                                        key={i}
-                                                        type="text"
-                                                        value={a}
-                                                        className="mb-2"
-                                                        disabled
-                                                    />
-                                                ))}
-                                            </FormGroup>
-                                        )}
-
-                                        <div className="d-flex justify-content-end mt-3">
-                                            <Button variant="secondary" className="me-2" onClick={() => deleteQuestion(index)}>
-                                                Delete
-                                            </Button>
-                                            <Button variant="danger" onClick={() => toggleEdit(index, true)}>
-                                                Edit
-                                            </Button>
-                                        </div>
-                                    </>
-                                ) : (
-                                    <>
-                                        <Row>
-                                            <Col sm={3}>
-                                                <FormSelect value={editing.type} onChange={(e) => handleQuestionChange(index, "type", e.target.value)}>
-                                                    <option value="TRUE_FALSE">True/False</option>
-                                                    <option value="MULTIPLE_CHOICE">Multiple choice</option>
-                                                    <option value="FILL_BLANK">Fill Blank</option>
-                                                </FormSelect>
-                                            </Col>
-                                            <Col sm={3}>
-                                                <FormGroup as={Row} className="mb-1">
-                                                    <FormLabel column sm="auto">Points:</FormLabel>
-                                                    <Col>
-                                                        <FormControl type="text" value={editing.points}
-                                                            onChange={(e) => handleQuestionChange(index, "points", Number(e.target.value))}/>
-                                                    </Col>
-                                                </FormGroup>
-                                            </Col>
-                                        </Row> 
-                                        <hr/>
-
-                                        <FormGroup className="mb-3">
-                                            <FormLabel className="fs-4">Question:</FormLabel>
-                                            <FormControl as="textarea" rows={3} value={editing.question}
-                                                onChange={(e) => handleQuestionChange(index, "question", e.target.value)}
-                                            />
-                                        </FormGroup>
-
-                                        <FormGroup className="mb-3">
-                                            <FormLabel className="fs-4">Answer:</FormLabel>
-                                            {editing.type === "MULTIPLE_CHOICE" && Array.isArray(q.options) &&
-                                                editing.options.map((option: any, optIndex: number) => (
-                                                    <FormGroup as={Row} className="mb-3" key={optIndex}>
-                                                        <Col sm={1} className="d-flex align-items-center justify-content-end">
-                                                            <FormCheck
-                                                                type="radio"
-                                                                name={`correctAnswer-${index}`} 
-                                                                checked={editing.answer === optIndex}
-                                                                onChange={() => handleQuestionChange(index, "answer", optIndex)}
-                                                            />
-                                                        </Col>
-                                                        <FormLabel column sm={3} className="text-end">
-                                                            Possible Answer:
-                                                        </FormLabel>
-                                                        <Col sm={4}>  
-                                                            <FormControl type="text" value={option}
-                                                                onChange={(e) => handleQuestionChange(index, "options", e.target.value, optIndex)}/>
-                                                        </Col>
-                                                        <Col>
-                                                            <FaTrash className="text-danger me-2" role="button" 
-                                                                onClick={() => deleteOption(index, optIndex)}/>
-                                                        </Col>
-                                                    </FormGroup>
-                                            ))}
+                                            {editing.type === "MULTIPLE_CHOICE" && (
+                                                <FormGroup>
+                                                    {editing.options.map((opt: string, i: number) => ( 
+                                                        <FormCheck
+                                                            key={i}
+                                                            type="radio"
+                                                            name={`preview-${index}`}
+                                                            checked={editing.answer === i}
+                                                            label={opt}
+                                                            disabled
+                                                        />
+                                                    ))}
+                                                </FormGroup>  
+                                            )}
 
                                             {editing.type === "TRUE_FALSE" && (
-                                                <Row className="mb-2">
-                                                    <Col sm={2} className="d-flex align-items-center justify-content-end">
-                                                        <FormCheck
-                                                        type="radio"
-                                                        name={`trueFalseAnswer-${index}`}
-                                                        checked={editing.answer === true}
-                                                        onChange={() => handleQuestionChange(index, "answer", true)}
-                                                        label="True"
-                                                        />
-                                                    </Col>
-                                                    
-                                                    <Col sm={2} className="d-flex align-items-center justify-content-end">
-                                                        <FormCheck
-                                                        type="radio"
-                                                        name={`trueFalseAnswer-${index}`}
-                                                        checked={editing.answer === false}
-                                                        onChange={() => handleQuestionChange(index, "answer", false)}
-                                                        label="False"
-                                                        />
-                                                    </Col>
-                                                </Row>
+                                                <FormGroup>
+                                                    <FormCheck type="radio" label="True" disabled checked={editing.answer === true}/>
+                                                    <FormCheck type="radio" label="False" disabled checked={editing.answer === false}/>
+                                                </FormGroup>
                                             )}
 
                                             {editing.type === "FILL_BLANK" && (
-                                                <div>
-                                                    {(Array.isArray(editing.answer) ? editing.answer : [""]).map((ans: string, i: number) => (
-                                                        <FormGroup as={Row} className="mb-2" key={i}>
-                                                            <FormLabel column sm="3" className="text-end">Blank {i + 1}:</FormLabel>
-                                                            <Col sm="6">
-                                                                <FormControl
-                                                                    type="text"
-                                                                    value={ans}
-                                                                    onChange={(e) =>
-                                                                    handleQuestionChange(index, "answer", e.target.value, i)
-                                                                    }
+                                                <FormGroup>
+                                                    {(Array.isArray(editing.answer) ? editing.answer : [])
+                                                        .map((a: string, i: number) => ( 
+                                                        <FormControl
+                                                            key={i}
+                                                            type="text"
+                                                            value={a}
+                                                            className="mb-2"
+                                                            disabled
+                                                        />
+                                                    ))}
+                                                </FormGroup>
+                                            )}
+
+                                            <div className="d-flex justify-content-end mt-3">
+                                                <Button variant="secondary" className="me-2" onClick={() => deleteQuestion(index)}>
+                                                    Delete
+                                                </Button>
+                                                <Button variant="danger" onClick={() => toggleEdit(index, true)}>
+                                                    Edit
+                                                </Button>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Row>
+                                                <Col sm={3}>
+                                                    <FormSelect value={editing.type} onChange={(e) => handleQuestionChange(index, "type", e.target.value)}>
+                                                        <option value="TRUE_FALSE">True/False</option>
+                                                        <option value="MULTIPLE_CHOICE">Multiple choice</option>
+                                                        <option value="FILL_BLANK">Fill Blank</option>
+                                                    </FormSelect>
+                                                </Col>
+                                                <Col sm={3}>
+                                                    <FormGroup as={Row} className="mb-1">
+                                                        <FormLabel column sm="auto">Points:</FormLabel>
+                                                        <Col>
+                                                            <FormControl type="text" value={editing.points}
+                                                                onChange={(e) => handleQuestionChange(index, "points", Number(e.target.value))}/>
+                                                        </Col>
+                                                    </FormGroup>
+                                                </Col>
+                                            </Row> 
+                                            <hr/>
+
+                                            <FormGroup className="mb-3">
+                                                <FormLabel className="fs-4">Question:</FormLabel>
+                                                <FormControl as="textarea" rows={3} value={editing.question}
+                                                    onChange={(e) => handleQuestionChange(index, "question", e.target.value)}
+                                                />
+                                            </FormGroup>
+
+                                            <FormGroup className="mb-3">
+                                                <FormLabel className="fs-4">Answer:</FormLabel>
+                                                {editing.type === "MULTIPLE_CHOICE" && Array.isArray(q.options) &&
+                                                    editing.options.map((option: any, optIndex: number) => (
+                                                        <FormGroup as={Row} className="mb-3" key={optIndex}>
+                                                            <Col sm={1} className="d-flex align-items-center justify-content-end">
+                                                                <FormCheck
+                                                                    type="radio"
+                                                                    name={`correctAnswer-${index}`} 
+                                                                    checked={editing.answer === optIndex}
+                                                                    onChange={() => handleQuestionChange(index, "answer", optIndex)}
                                                                 />
+                                                            </Col>
+                                                            <FormLabel column sm={3} className="text-end">
+                                                                Possible Answer:
+                                                            </FormLabel>
+                                                            <Col sm={4}>  
+                                                                <FormControl type="text" value={option}
+                                                                    onChange={(e) => handleQuestionChange(index, "options", e.target.value, optIndex)}/>
                                                             </Col>
                                                             <Col>
                                                                 <FaTrash className="text-danger me-2" role="button" 
-                                                                    onClick={() => deleteBlank(index, i)}/>
+                                                                    onClick={() => deleteOption(index, optIndex)}/>
                                                             </Col>
                                                         </FormGroup>
-                                                    ))}
-                                                    
-                                                </div>
-                                            )}
-                                        </FormGroup>
+                                                ))}
 
-                                        <div className="d-flex justify-content-between align-items-center mt-3">
-                                            <div style={{ flex: 1 }}>
-                                                {editing.type === "MULTIPLE_CHOICE" && (
-                                                    <Button
-                                                        variant="secondary"
-                                                        onClick={() => addOption(index)}
-                                                        >
-                                                        <FaPlus className="position-relative me-2"/>
-                                                        Add Another Answer
-                                                    </Button>
+                                                {editing.type === "TRUE_FALSE" && (
+                                                    <Row className="mb-2">
+                                                        <Col sm={2} className="d-flex align-items-center justify-content-end">
+                                                            <FormCheck
+                                                            type="radio"
+                                                            name={`trueFalseAnswer-${index}`}
+                                                            checked={editing.answer === true}
+                                                            onChange={() => handleQuestionChange(index, "answer", true)}
+                                                            label="True"
+                                                            />
+                                                        </Col>
+                                                        
+                                                        <Col sm={2} className="d-flex align-items-center justify-content-end">
+                                                            <FormCheck
+                                                            type="radio"
+                                                            name={`trueFalseAnswer-${index}`}
+                                                            checked={editing.answer === false}
+                                                            onChange={() => handleQuestionChange(index, "answer", false)}
+                                                            label="False"
+                                                            />
+                                                        </Col>
+                                                    </Row>
                                                 )}
+
                                                 {editing.type === "FILL_BLANK" && (
-                                                    <Button
-                                                        variant="secondary"
-                                                        onClick={() => addBlank(index)}
-                                                        >
-                                                        <FaPlus className="position-relative me-2"/>
-                                                        Add Another Answer
-                                                    </Button>
+                                                    <div>
+                                                        {(Array.isArray(editing.answer) ? editing.answer : [""]).map((ans: string, i: number) => (
+                                                            <FormGroup as={Row} className="mb-2" key={i}>
+                                                                <FormLabel column sm="3" className="text-end">Blank {i + 1}:</FormLabel>
+                                                                <Col sm="6">
+                                                                    <FormControl
+                                                                        type="text"
+                                                                        value={ans}
+                                                                        onChange={(e) =>
+                                                                        handleQuestionChange(index, "answer", e.target.value, i)
+                                                                        }
+                                                                    />
+                                                                </Col>
+                                                                <Col>
+                                                                    <FaTrash className="text-danger me-2" role="button" 
+                                                                        onClick={() => deleteBlank(index, i)}/>
+                                                                </Col>
+                                                            </FormGroup>
+                                                        ))}
+                                                        
+                                                    </div>
                                                 )}
-                                            </div>
+                                            </FormGroup>
 
-                                            <div className="d-flex gap-2">
-                                                <Button variant="secondary"  
-                                                    onClick={() => toggleEdit(index, false)}>
-                                                    Cancel
-                                                </Button>
-                                                <Button variant="danger"  
-                                                    onClick={async () => {
-                                                        await handleQuestionUpdate(index);
-                                                        toggleEdit(index, false);      
-                                                    }}>
-                                                    Update
-                                                </Button>
-                                            </div>
-                                        </div>
-                                    </>
-                                )}
-                            </Card>
-                            )
-                        })}
+                                            <div className="d-flex justify-content-between align-items-center mt-3">
+                                                <div style={{ flex: 1 }}>
+                                                    {editing.type === "MULTIPLE_CHOICE" && (
+                                                        <Button
+                                                            variant="secondary"
+                                                            onClick={() => addOption(index)}
+                                                            >
+                                                            <FaPlus className="position-relative me-2"/>
+                                                            Add Another Answer
+                                                        </Button>
+                                                    )}
+                                                    {editing.type === "FILL_BLANK" && (
+                                                        <Button
+                                                            variant="secondary"
+                                                            onClick={() => addBlank(index)}
+                                                            >
+                                                            <FaPlus className="position-relative me-2"/>
+                                                            Add Another Answer
+                                                        </Button>
+                                                    )}
+                                                </div>
 
-                        <hr/>
-                        <button className="btn btn-danger me-2 float-end" onClick={handleSave}>Save</button>
-                        <button className="btn btn-danger me-2 float-end" onClick={handleSaveAndPublish}>Save and Publish</button>
-                        <button className="btn btn-secondary float-end me-2" onClick={handleCancel}>Cancel</button>
+                                                <div className="d-flex gap-2">
+                                                    <Button variant="secondary"  
+                                                        onClick={() => toggleEdit(index, false)}>
+                                                        Cancel
+                                                    </Button>
+                                                    <Button variant="danger"  
+                                                        onClick={async () => {
+                                                            await handleQuestionUpdate(index);
+                                                            toggleEdit(index, false);      
+                                                        }}>
+                                                        Update
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        </>
+                                    )}
+                                </Card>
+                                )
+                            })}
+
+                            
+                        </div>
                     </div>
                 </div>
             </div>
+
+            <hr/>
+            <button className="btn btn-danger me-2 float-end" onClick={handleSave}>Save</button>
+            <button className="btn btn-danger me-2 float-end" onClick={handleSaveAndPublish}>Save and Publish</button>
+            <button className="btn btn-secondary float-end me-2" onClick={handleCancel}>Cancel</button>
         </div>
-        
     )
 }

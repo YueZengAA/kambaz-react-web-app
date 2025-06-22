@@ -94,7 +94,7 @@ export default function DetailsEditor() {
                     Points
                 </FormLabel>
                 <Col sm={5}>
-                    <FormControl type="text" value={quiz.points}/>
+                    <FormControl type="text" value={quiz.points} disabled/>
                 </Col>
             </FormGroup>
 
@@ -238,7 +238,7 @@ export default function DetailsEditor() {
 
                         <FormGroup className="fw-bold mb-3" id="wd-due-date">
                             <FormLabel>Due</FormLabel>
-                            <FormControl type="date" defaultValue={quiz.due}
+                            <FormControl type="date" value={quiz.due?.slice(0, 10)|| ""}
                                 onChange={(e) => handleChange("due", e.target.value)}/>
                         </FormGroup>
 
@@ -246,12 +246,12 @@ export default function DetailsEditor() {
                             <Row>
                                 <Col md={6}>
                                     <FormLabel id="wd-available-from">Available from</FormLabel>
-                                    <FormControl type="date" defaultValue={quiz.start}
+                                    <FormControl type="date" value={quiz.start?.slice(0, 10)|| ""}
                                         onChange={(e) => handleChange("start", e.target.value)}/>
                                 </Col>
                                 <Col md={6}>
                                     <FormLabel id="wd-available-until">Until</FormLabel>
-                                    <FormControl type="date" defaultValue={quiz.until}
+                                    <FormControl type="date" value={quiz.until?.slice(0, 10)|| ""}
                                         onChange={(e) => handleChange("until", e.target.value)}/>
                                 </Col>
                             </Row> 
