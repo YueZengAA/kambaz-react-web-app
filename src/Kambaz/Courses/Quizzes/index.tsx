@@ -128,7 +128,9 @@ export default function Quizzes() {
                             </div>
                         )}
 
-                        {quizzes.map((quiz: any) => {
+                        {quizzes
+                            .filter((quiz: any) => currentUser.role === "FACULTY" || quiz.status === "PUBLISH")
+                            .map((quiz: any) => {
                             const record = records[quiz._id];
                             return (
                                 <ListGroup.Item className="wd-lesson p-3 ps-1 d-flex justify-content-between align-items-center"
