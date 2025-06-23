@@ -58,16 +58,20 @@ export default function Quizzes() {
             return;
         }
         const record = await quizzesClient.findLatestRecord(quiz._id);
-        const isFirstAttempt = !record;
         const now = new Date();
         const due = new Date(quiz.until);
         const available = new Date(quiz.start);
-        if (now > available) {
-            if (isFirstAttempt && now < due) {
-                navigate(`/Kambaz/Courses/${cid}/Quizzes/${quiz._id}/Instruction`);
-            } else {
-                navigate(`/Kambaz/Courses/${cid}/Quizzes/${quiz._id}/Result`);
-            }
+
+        const hasStarted = now > available;
+        const isBeforeDue = now < due;
+        const isFirstAttempt = !record;
+
+        if (!hasStarted) return;
+
+        if (isBeforeDue && isFirstAttempt) {
+            navigate(`/Kambaz/Courses/${cid}/Quizzes/${quiz._id}/Instruction`);
+        } else if (record) {
+            navigate(`/Kambaz/Courses/${cid}/Quizzes/${quiz._id}/Result`);
         }
     }
 

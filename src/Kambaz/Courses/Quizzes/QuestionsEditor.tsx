@@ -441,9 +441,7 @@ export default function QuestionsEditor() {
                                     )}
                                 </Card>
                                 )
-                            })}
-
-                            
+                            })}  
                         </div>
                     </div>
                 </div>
